@@ -1,4 +1,4 @@
-# oracle-nix
+# nixos-oracle
 
 NixOS-образ для Oracle Cloud: `VM.Standard.A1.Flex` (Ampere, aarch64), QCOW2,
 UEFI, paravirtualized. Собран из `nixos-unstable`.
