@@ -1,0 +1,109 @@
+// Minimal zellij config.
+//
+// Design: window management lives on Alt, so Ctrl-* is left to the programs
+// running inside panes (micro, OpenCode, shells, etc.).
+//
+// Prefix-free bindings (normal mode):
+//   Alt o            new pane (split right)
+//   Alt Shift o      new pane below (use on a half for quarters)
+//   Alt t            new tab
+//   Alt w            close pane (closing the last pane closes its tab)
+//   Alt h/j/k/l      focus pane left/down/up/right
+//   Alt left/right   previous/next tab (wraps around)
+//   Alt Shift h/l    previous/next tab (extra fallback)
+//   Alt r            enter resize mode (then h/j/k/l, Shift+H/J/K/L)
+//   Alt Shift q      detach (session and programs keep running)
+//   Alt Shift x      quit zellij completely (kills panes; layout saved for resurrection)
+//   Shift Enter      Ctrl+J (LF) for OpenCode/micro newline
+//
+// Previous config backed up next to this file.
+
+keybinds clear-defaults=true {
+    normal {
+        // Panes
+        bind "Alt o" { NewPane "Right"; }
+        bind "Alt Shift o" { NewPane "Down"; }
+        bind "Alt w" { CloseFocus; }
+        bind "Alt h" { MoveFocus "left"; }
+        bind "Alt j" { MoveFocus "down"; }
+        bind "Alt k" { MoveFocus "up"; }
+        bind "Alt l" { MoveFocus "right"; }
+
+        // Tabs
+        // Use the minimal layout explicitly so tabs created in an
+        // already-running session also get the tab bar without the old
+        // bottom status bar.
+        bind "Alt t" {
+            NewTab {
+                layout "/etc/zellij/layouts/minimal.kdl"
+            }
+        }
+        bind "Alt left" { GoToPreviousTab; }
+        bind "Alt right" { GoToNextTab; }
+        bind "Alt Shift h" { GoToPreviousTab; }
+        bind "Alt Shift l" { GoToNextTab; }
+
+        // Resize mode (occasional, so one extra key is fine)
+        bind "Alt r" { SwitchToMode "resize"; }
+
+        // Leave the session running in the background.
+        bind "Alt Shift q" { Detach; }
+        // Hard quit: closes every pane (layout is saved for resurrection).
+        bind "Alt Shift x" { Quit; }
+
+        // Shift+Enter -> LF, which OpenCode/micro use as "newline".
+        bind "Shift Enter" { Write 10; }
+    }
+
+    resize {
+        bind "h" "left" { Resize "Increase left"; }
+        bind "l" "right" { Resize "Increase right"; }
+        bind "k" "up" { Resize "Increase up"; }
+        bind "j" "down" { Resize "Increase down"; }
+        bind "H" { Resize "Decrease left"; }
+        bind "L" { Resize "Decrease right"; }
+        bind "K" { Resize "Decrease up"; }
+        bind "J" { Resize "Decrease down"; }
+        bind "+" "=" { Resize "Increase"; }
+        bind "-" { Resize "Decrease"; }
+        bind "Esc" "Enter" "Alt r" { SwitchToMode "normal"; }
+        bind "Alt Shift q" { Detach; }
+        bind "Alt Shift x" { Quit; }
+    }
+}
+
+theme "everforest"
+default_mode "normal"
+default_shell "zsh"
+scrollback_editor "micro"
+
+// Old, compact look: rectangular tabs, no arrow glyphs.
+simplified_ui true
+
+// One-line tab bar at the top, no bottom status bar / key hints.
+default_layout "minimal"
+
+// Hide the session name from the UI.
+ui {
+    pane_frames {
+        hide_session_name true
+    }
+}
+
+// Always come back to the same session (created on first launch, then
+// attached to or resurrected automatically).
+session_name "main"
+attach_to_session true
+
+// Keyboard and mouse
+support_kitty_keyboard_protocol true
+mouse_mode true
+mouse_click_through true
+show_startup_tips false
+
+// Session resurrection: quit with Alt+Q, then `zellij ls` / `zellij attach`.
+session_serialization true
+serialize_pane_viewport true
+scrollback_lines_to_serialize 1000
+serialization_interval 5
+on_force_close "detach"

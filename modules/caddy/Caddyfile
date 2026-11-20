@@ -1,0 +1,14 @@
+{
+	admin off
+	auto_https disable_redirects
+}
+
+# SearXNG. Доступ только через tailnet: порт 3443 закрыт файрволом снаружи.
+:3443 {
+	reverse_proxy 127.0.0.1:8888
+}
+
+# Zellij web. Тоже только tailnet; сам zellij слушает 8084 на localhost.
+:8091 {
+	reverse_proxy 127.0.0.1:8084
+}

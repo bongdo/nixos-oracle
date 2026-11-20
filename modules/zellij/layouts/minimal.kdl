@@ -1,0 +1,8 @@
+// Top: pane. Bottom: one-line tab bar.
+// No status bar, no key hints, no session name.
+layout {
+    pane
+    pane size=1 borderless=true {
+        plugin location="zellij:tab-bar"
+    }
+}
